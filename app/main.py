@@ -37,7 +37,7 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-  return render_template('index.html')
+  return ('index.html')
 
 
 
