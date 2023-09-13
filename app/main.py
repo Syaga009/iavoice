@@ -39,44 +39,5 @@ def allowed_file(filename):
 def index():
   return render_template('index.html')
 
-@app.route('/realtime', methods=['POST'])
-def realtime():
-    try:
-        duration = 5  # Duración de la grabación en segundos
-        SAMPLE_RATE = 44100  # Frecuencia de muestreo para la grabación de audio
 
-        audio = sd.rec(int(duration * SAMPLE_RATE), channels=1, dtype='float32')
 
-        sd.wait()
-        audio_path = 'temp_audio.wav'
-        sf.write(audio_path, audio, SAMPLE_RATE)
-        
-        mfcc = preprocess_audio(audio_path)
-        if mfcc is None:
-            return jsonify({'error': 'Error al procesar el audio grabado. Asegúrate de que sea válido.'}), 500
-        
-        predictions = model.predict(mfcc)
-        emotion_index = np.argmax(predictions)
-        emotion = emotions[emotion_index]
-        probability = predictions[0][emotion_index]
-        
-        gif_url = get_gif_url(emotion)
-        
-        return jsonify({'emotion': emotion, 'probability': float(probability), 'gif_url': gif_url}), 200
-    except Exception as e:
-        error_message = f'Error durante la grabación y detección de emociones: {e}'
-        print(error_message)  # Imprime el mensaje de error en la consola
-        return jsonify({'error': error_message}), 500
-def get_gif_url(emotion):
-    gif_folder = "static/emojis"
-    if emotion == "Felicidad":
-        return f"{gif_folder}/felizAndres.gif"
-    elif emotion == "Ansiedad":
-        return f"{gif_folder}/ansiedadAndres.gif"
-    elif emotion == "Curiosidad":
-        return f"{gif_folder}/curiosidadAndres.gif"
-    elif emotion == "Tranquilidad":
-        return f"{gif_folder}/tranquilidadAndres.gif"
-    else:
-        return f"{gif_folder}/tranquilidadAndres.gif"
-    
