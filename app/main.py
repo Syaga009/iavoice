@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import sounddevice as sd
+#import sounddevice as sd
 #import soundfile as sf
 from flask import Flask, request, render_template
 app= Flask(__name__)
